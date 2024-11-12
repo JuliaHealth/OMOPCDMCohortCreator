@@ -1,5 +1,6 @@
 using DataFrames
 using Dates
+using DBInterface
 using FunSQL:
 	From,
 	Fun,
@@ -10,7 +11,9 @@ using FunSQL:
 	Select,
 	render, 
 	Agg,
-	LeftJoin
+	LeftJoin,
+  reflect,
+  render
 using HealthSampleData
 using OMOPCDMCohortCreator
 using SQLite
@@ -20,8 +23,6 @@ using TimeZones
 using JSON3
 using OHDSICohortExpressions: translate, Model
 
-import DBInterface as DBI
-
 # For allowing HealthSampleData to always download sample data
 ENV["DATADEPS_ALWAYS_ACCEPT"] = true
 
@@ -30,18 +31,31 @@ sqlite_conn = SQLite.DB(Eunomia())
 GenerateDatabaseDetails(:sqlite, "main")
 GenerateTables(sqlite_conn)
 
-cohort = read("./assets/strep_throat.json", String)
+cohort_expression = read("./assets/strep_throat.json", String)
 
-#using DBInterface
+fun_sql = translate(
+    cohort_expression,
+    cohort_definition_id = 1,
+);
 
-model = Model(cdm_version=v"5.3.1", cdm_schema="main",
-                     vocabulary_schema="main", results_schema="main",
-                     target_schema="main", target_table="cohort");
+include("./assets/catalog.jl")
 
-sql = translate(cohort, dialect=:sqlite, model=model,
-                         cohort_definition_id=1);
+sql = render(catalog, fun_sql);
 
-[DBI.execute(sqlite_conn, sub_query) for sub_query in split(sql, ";")[1:end-1]]
+DBInterface.execute(sqlite_conn,
+"DELETE FROM cohort;")
+
+res = DBInterface.execute(sqlite_conn,
+    """
+    INSERT INTO
+        cohort
+    SELECT
+        *
+    FROM
+        ($sql) AS foo;
+    """
+)
+
 
 @testset "OMOPCDMCohortCreator" begin
 	@testset "SQLite Helper Functions" begin

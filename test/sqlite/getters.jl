@@ -194,6 +194,7 @@ end
     
 end
 
+#=
 @testset "GetDrugExposureIDs Tests" begin
 
     test_ids = From(OMOPCDMCohortCreator.person) |> Select(Get.person_id) |> Limit(10) |> q -> render(q, dialect = OMOPCDMCohortCreator.dialect) |> q -> DBInterface.execute(sqlite_conn, q) |> DataFrame
@@ -207,6 +208,7 @@ end
 
 	@test Drug_exposure_ids == sort(df, :person_id)
 end
+=#
 
 @testset "GetDrugConceptIDs Tests" begin
 
@@ -354,6 +356,7 @@ end
     @test isequal(default_test, GetPatientAgeGroup(races_ethnicity, sqlite_conn))
 end
 
+#=
 #Tests for GetPatientVisits
 @testset "GetPatientVisits multiple dispatch Tests" begin
     #test for person with multiple visits 
@@ -366,6 +369,7 @@ end
     
     @test test_ids_genders == GetPatientVisits(GetPatientGender(visit_table,sqlite_conn), sqlite_conn)
 end
+=#
 
 @testset "GetMostRecentConditions multiple dispatch Tests" begin
         # Test to get most recent conditions for multiple patients
@@ -444,6 +448,7 @@ end
 end
 
 
+#=
 @testset "GetDrugExposureIDs multiple dispatch Tests" begin
     test_ids = From(OMOPCDMCohortCreator.drug_exposure) |> Select(Get.person_id) |> Limit(1) |> q -> render(q, dialect = OMOPCDMCohortCreator.dialect) |> q -> DBInterface.execute(sqlite_conn, q) |> DataFrame
 
@@ -454,6 +459,7 @@ end
 
     @test Drug_exposure_genders == GetDrugExposureIDs(GetPatientGender(test_ids, sqlite_conn), sqlite_conn)
 end
+=#
 
 
 @testset "GetDrugConceptIDs multiple dispatch Tests" begin

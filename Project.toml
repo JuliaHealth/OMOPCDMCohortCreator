@@ -1,7 +1,7 @@
 name = "OMOPCDMCohortCreator"
 uuid = "f525a15e-a73f-4eef-870f-f901257eae22"
 authors = ["Jacob Zelko <jacobszelko@gmail.com>", "Fareeda Abdelazeez", "Varshini Chinta", "Jay Sanjay <landgejay124@gmail.com>"]
-version = "0.4.0"
+version = "0.5.0"
 
 [deps]
 DBInterface = "a10d1c49-ce27-4219-8d33-6db1a4562965"

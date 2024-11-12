@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [0.5.0] - February 23rd, 2024
+
+Patch release to add in some new features and fixes 
+
+### Added 
+
+- Added Getters for Drug Exposures
+
+  *  GetDrugExposureStartDate
+
+  *  GetDrugExposureEndDate
+
+- Misc
+
+  * Minor fixes in  GetPatientAgeGroup Function
+  
+- Extensive test suite for new features
+
+
 ## [0.4.0] - December 1st, 2023
 
 Patch release to add in some new features and fixes 

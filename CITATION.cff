@@ -10,7 +10,7 @@ authors:
     given-names: Fareeda
   - family-names: Sanjay
     given-names: Jay
-title: "OMOPCDMCohortCreator 0.4.0"
-version: 0.4.0
+title: "OMOPCDMCohortCreator 0.5.0"
+version: 0.5.0
 doi: 10.5281/zenodo.7052105
-date-released: 2023-12-01
+date-released: 2024-02-23

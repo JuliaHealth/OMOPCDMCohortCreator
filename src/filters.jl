@@ -282,4 +282,31 @@ function StateFilterPersonIDs(states; tab = location, join_tab = person)
 
 end
 
+"""
+TODO: Update these docstrings
+"""
+function DrugExposureFilterPersonIDs(
+    drug_concept_ids, conn;
+    tab = drug_exposure,
+)
+    df = DBInterface.execute(conn, DrugExposureFilterPersonIDs(drug_concept_ids; tab = tab)) |> DataFrame
+
+    return df 
+
+end
+
+function DrugExposureFilterPersonIDs(
+    drug_concept_ids;
+    tab = drug_exposure,
+)
+    sql =
+        From(tab) |>
+        Where(Fun.in(Get.drug_concept_id, drug_concept_ids...)) |>
+        Group(Get.person_id) |>
+        q -> render(q, dialect = dialect)
+
+        return String(sql)
+
+end
+
 export VisitFilterPersonIDs, ConditionFilterPersonIDs, RaceFilterPersonIDs, GenderFilterPersonIDs, StateFilterPersonIDs

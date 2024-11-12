@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.0] - November 11th, 2024
+
+New minor release introducing some new features and dropping of old dependencies
 
 ## [0.5.0] - February 23rd, 2024
 

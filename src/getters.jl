@@ -2065,4 +2065,660 @@ function GetDrugExposureStartDate(
 
 end
 
-export GetDatabasePersonIDs, GetPatientState, GetPatientGender, GetPatientRace, GetPatientAgeGroup, GetPatientVisits, GetMostRecentConditions, GetMostRecentVisit, GetVisitCondition, GetPatientEthnicity, GetDatabaseYearRange, GetVisitPlaceOfService, GetVisitConcept, GetVisitDate, GetDrugExposures, GetDrugConceptIDs, GetDrugAmounts, GetVisitProcedure, GetDatabaseCohorts, GetCohortSubjects, GetCohortSubjectStartDate, GetCohortSubjectEndDate, GetDrugExposureIDs, GetDrugExposureEndDate, GetDrugExposureStartDate
+"""
+GetVisitDrug(visit_ids, conn; tab = visit_occurrence)
+
+Given a list of visit IDs, find their corresponding drug conditions.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+- `conn` - database connection using DBInterface
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Condition Occurrence table; default `drug_exposure`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:drug_concept_id`
+"""
+function GetVisitDrug(
+    visit_ids,
+    conn;
+    tab=drug_exposure
+)
+
+    df = DBInterface.execute(conn, GetVisitDrug(visit_ids; tab=tab)) |> DataFrame
+
+    return df
+
+end
+
+"""
+function GetVisitDrug(df:DataFrame, conn; tab = drug_exposure)
+
+Given a `DataFrame` with a `:visit_occurrence_id` column, return the `DataFrame` with an associated `:drug_concept_id` for each `visit_occurrence_id` in the `DataFrame`
+
+Multiple dispatch that accepts all other arguments like in `GetVisitDrug(ids, conn; tab = drug_exposure)`
+"""
+
+function GetVisitDrug(
+    df::DataFrame,
+    conn;
+    tab=drug_exposure
+)
+
+    df_ids= df[:,"visit_occurrence_id"]
+    
+    return outerjoin(GetVisitDrug(df_ids, conn; tab=tab), df, on = :visit_occurrence_id)
+
+end
+"""
+GetVisitDrug(visit_ids; tab = visit_occurrence)
+
+Produces SQL statement that, given a list of `visit_id`'s, finds the conditions diagnosed associated with that visit.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Condition Occurrence table; default `drug_exposure`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:drug_concept_id`
+"""
+function GetVisitDrug(
+    visit_ids;
+    tab=drug_exposure
+)
+
+    sql =
+        From(tab) |>
+        Where(Fun.in(Get.visit_occurrence_id, visit_ids...)) |>
+        Select(Get.visit_occurrence_id, Get.drug_concept_id) |>
+        q -> render(q, dialect=dialect)
+
+    return String(sql)
+
+end
+
+"""
+GetVisitObservation(visit_ids, conn; tab = visit_occurrence)
+
+Given a list of visit IDs, find their corresponding observations.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+- `conn` - database connection using DBInterface
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Observation table; default `observation`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:observation_concept_id`
+"""
+function GetVisitObservation(
+    visit_ids,
+    conn;
+    tab=observation
+)
+
+    df = DBInterface.execute(conn, GetVisitObservation(visit_ids; tab=tab)) |> DataFrame
+
+    return df
+
+end
+
+"""
+function GetVisitObservation(df:DataFrame, conn; tab = observation)
+
+Given a `DataFrame` with a `:visit_occurrence_id` column, return the `DataFrame` with an associated `:observation_concept_id` for each `visit_occurrence_id` in the `DataFrame`
+
+Multiple dispatch that accepts all other arguments like in `GetVisitObservation(ids, conn; tab = observation)`
+"""
+
+function GetVisitObservation(
+    df::DataFrame,
+    conn;
+    tab=observation
+)
+
+    df_ids= df[:,"visit_occurrence_id"]
+    
+    return outerjoin(GetVisitObservation(df_ids, conn; tab=tab), df, on = :visit_occurrence_id)
+
+end
+"""
+GetVisitObservation(visit_ids; tab = visit_occurrence)
+
+Produces SQL statement that, given a list of `visit_id`'s, finds the conditions diagnosed associated with that visit.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Observation table; default `observation`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:observation_concept_id`
+"""
+function GetVisitObservation(
+    visit_ids;
+    tab=observation
+)
+
+    sql =
+        From(tab) |>
+        Where(Fun.in(Get.visit_occurrence_id, visit_ids...)) |>
+        Select(Get.visit_occurrence_id, Get.observation_concept_id) |>
+        q -> render(q, dialect=dialect)
+
+    return String(sql)
+
+end
+
+"""
+GetVisitMeasurement(visit_ids, conn; tab = visit_occurrence)
+
+Given a list of visit IDs, find their corresponding measurements.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+- `conn` - database connection using DBInterface
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Measurement table; default `measurement`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:measurement_concept_id`
+"""
+function GetVisitMeasurement(
+    visit_ids,
+    conn;
+    tab=measurement
+)
+
+    df = DBInterface.execute(conn, GetVisitMeasurement(visit_ids; tab=tab)) |> DataFrame
+
+    return df
+
+end
+
+"""
+function GetVisitMeasurement(df:DataFrame, conn; tab = measurement)
+
+Given a `DataFrame` with a `:visit_occurrence_id` column, return the `DataFrame` with an associated `:measurement_concept_id` for each `visit_occurrence_id` in the `DataFrame`
+
+Multiple dispatch that accepts all other arguments like in `GetVisitMeasurement(ids, conn; tab = measurement)`
+"""
+
+function GetVisitMeasurement(
+    df::DataFrame,
+    conn;
+    tab=measurement
+)
+
+    df_ids= df[:,"visit_occurrence_id"]
+    
+    return outerjoin(GetVisitMeasurement(df_ids, conn; tab=tab), df, on = :visit_occurrence_id)
+
+end
+"""
+GetVisitMeasurement(visit_ids; tab = visit_occurrence)
+
+Produces SQL statement that, given a list of `visit_id`'s, finds the conditions diagnosed associated with that visit.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Measurement table; default `measurement`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:measurement_concept_id`
+"""
+function GetVisitMeasurement(
+    visit_ids;
+    tab=measurement
+)
+
+    sql =
+        From(tab) |>
+        Where(Fun.in(Get.visit_occurrence_id, visit_ids...)) |>
+        Select(Get.visit_occurrence_id, Get.measurement_concept_id) |>
+        q -> render(q, dialect=dialect)
+
+    return String(sql)
+
+end
+
+"""
+GetVisitDevice(visit_ids, conn; tab = visit_occurrence)
+
+Given a list of visit IDs, find their corresponding devices.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+- `conn` - database connection using DBInterface
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Device Exposure table; default `device_exposure`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:device_concept_id`
+"""
+function GetVisitDevice(
+    visit_ids,
+    conn;
+    tab=device_exposure
+)
+
+    df = DBInterface.execute(conn, GetVisitDevice(visit_ids; tab=tab)) |> DataFrame
+
+    return df
+
+end
+
+"""
+function GetVisitDevice(df:DataFrame, conn; tab = device_exposure)
+
+Given a `DataFrame` with a `:visit_occurrence_id` column, return the `DataFrame` with an associated `:device_concept_id` for each `visit_occurrence_id` in the `DataFrame`
+
+Multiple dispatch that accepts all other arguments like in `GetVisitDevice(ids, conn; tab = device_exposure)`
+"""
+
+function GetVisitDevice(
+    df::DataFrame,
+    conn;
+    tab=device_exposure
+)
+
+    df_ids= df[:,"visit_occurrence_id"]
+    
+    return outerjoin(GetVisitDevice(df_ids, conn; tab=tab), df, on = :visit_occurrence_id)
+
+end
+"""
+GetVisitDevice(visit_ids; tab = visit_occurrence)
+
+Produces SQL statement that, given a list of `visit_id`'s, finds the conditions diagnosed associated with that visit.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Device Exposure table; default `device_exposure`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:device_concept_id`
+"""
+function GetVisitDevice(
+    visit_ids;
+    tab=device_exposure
+)
+
+    sql =
+        From(tab) |>
+        Where(Fun.in(Get.visit_occurrence_id, visit_ids...)) |>
+        Select(Get.visit_occurrence_id, Get.device_concept_id) |>
+        q -> render(q, dialect=dialect)
+
+    return String(sql)
+
+end
+
+"""
+GetVisitMetadata(visit_ids, conn; tab = visit_occurrence)
+
+Given a list of visit IDs, find their corresponding metadata.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+- `conn` - database connection using DBInterface
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Metadata table; default `metadata`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:metadata_concept_id`
+"""
+function GetVisitMetadata(
+    visit_ids,
+    conn;
+    tab=metadata
+)
+
+    df = DBInterface.execute(conn, GetVisitMetadata(visit_ids; tab=tab)) |> DataFrame
+
+    return df
+
+end
+
+"""
+function GetVisitMetadata(df:DataFrame, conn; tab = metadata)
+
+Given a `DataFrame` with a `:visit_occurrence_id` column, return the `DataFrame` with an associated `:metadata_concept_id` for each `visit_occurrence_id` in the `DataFrame`
+
+Multiple dispatch that accepts all other arguments like in `GetVisitMetadata(ids, conn; tab = metadata)`
+"""
+
+function GetVisitMetadata(
+    df::DataFrame,
+    conn;
+    tab=metadata
+)
+
+    df_ids= df[:,"visit_occurrence_id"]
+    
+    return outerjoin(GetVisitMetadata(df_ids, conn; tab=tab), df, on = :visit_occurrence_id)
+
+end
+"""
+GetVisitMetadata(visit_ids; tab = visit_occurrence)
+
+Produces SQL statement that, given a list of `visit_id`'s, finds the conditions diagnosed associated with that visit.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Metadata table; default `metadata`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:metadata_concept_id`
+"""
+function GetVisitMetadata(
+    visit_ids;
+    tab=metadata
+)
+
+    sql =
+        From(tab) |>
+        Where(Fun.in(Get.visit_occurrence_id, visit_ids...)) |>
+        Select(Get.visit_occurrence_id, Get.metadata_concept_id) |>
+        q -> render(q, dialect=dialect)
+
+    return String(sql)
+
+end
+
+"""
+GetVisitMeasurementValue(visit_ids, conn; tab = visit_occurrence)
+
+Given a list of visit IDs, find their corresponding measurement values.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+- `conn` - database connection using DBInterface
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Measurement table; default `measurement`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:value_as_concept_id`
+"""
+function GetVisitMeasurementValue(
+    visit_ids,
+    conn;
+    tab=measurement
+)
+
+    df = DBInterface.execute(conn, GetVisitMeasurementValue(visit_ids; tab=tab)) |> DataFrame
+
+    return df
+
+end
+
+"""
+function GetVisitMeasurementValue(df:DataFrame, conn; tab = measurement)
+
+Given a `DataFrame` with a `:visit_occurrence_id` column, return the `DataFrame` with an associated `:value_as_concept_id` for each `visit_occurrence_id` in the `DataFrame`
+
+Multiple dispatch that accepts all other arguments like in `GetVisitMeasurementValue(ids, conn; tab = measurement)`
+"""
+
+function GetVisitMeasurementValue(
+    df::DataFrame,
+    conn;
+    tab=measurement
+)
+
+    df_ids= df[:,"visit_occurrence_id"]
+    
+    return outerjoin(GetVisitMeasurementValue(df_ids, conn; tab=tab), df, on = :visit_occurrence_id)
+
+end
+"""
+GetVisitMeasurementValue(visit_ids; tab = visit_occurrence)
+
+Produces SQL statement that, given a list of `visit_id`'s, finds the conditions diagnosed associated with that visit.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Measurement table; default `measurement`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:value_as_concept_id`
+"""
+function GetVisitMeasurementValue(
+    visit_ids;
+    tab=measurement
+)
+
+    sql =
+        From(tab) |>
+        Where(Fun.in(Get.visit_occurrence_id, visit_ids...)) |>
+        Select(Get.visit_occurrence_id, Get.value_as_concept_id) |>
+        q -> render(q, dialect=dialect)
+
+    return String(sql)
+
+end
+
+"""
+GetVisitMeasurementValue(visit_ids, conn; tab = visit_occurrence)
+
+Given a list of visit IDs, find their corresponding measurement values.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+- `conn` - database connection using DBInterface
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Measurement table; default `measurement`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:value_as_concept_id`
+"""
+function GetVisitMeasurementValue(
+    visit_ids,
+    conn;
+    tab=measurement
+)
+
+    df = DBInterface.execute(conn, GetVisitMeasurementValue(visit_ids; tab=tab)) |> DataFrame
+
+    return df
+
+end
+
+"""
+function GetVisitMeasurementValue(df:DataFrame, conn; tab = measurement)
+
+Given a `DataFrame` with a `:visit_occurrence_id` column, return the `DataFrame` with an associated `:value_as_concept_id` for each `visit_occurrence_id` in the `DataFrame`
+
+Multiple dispatch that accepts all other arguments like in `GetVisitMeasurementValue(ids, conn; tab = measurement)`
+"""
+
+function GetVisitMeasurementValue(
+    df::DataFrame,
+    conn;
+    tab=measurement
+)
+
+    df_ids= df[:,"visit_occurrence_id"]
+    
+    return outerjoin(GetVisitMeasurementValue(df_ids, conn; tab=tab), df, on = :visit_occurrence_id)
+
+end
+"""
+GetVisitMeasurementValue(visit_ids; tab = visit_occurrence)
+
+Produces SQL statement that, given a list of `visit_id`'s, finds the conditions diagnosed associated with that visit.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Measurement table; default `measurement`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:value_as_concept_id`
+"""
+function GetVisitMeasurementValue(
+    visit_ids;
+    tab=measurement
+)
+
+    sql =
+        From(tab) |>
+        Where(Fun.in(Get.visit_occurrence_id, visit_ids...)) |>
+        Select(Get.visit_occurrence_id, Get.value_as_concept_id) |>
+        q -> render(q, dialect=dialect)
+
+    return String(sql)
+
+end
+
+"""
+GetVisitAnatomicSite(visit_ids, conn; tab = visit_occurrence)
+
+Given a list of visit IDs, find their corresponding anatomic specimens.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+- `conn` - database connection using DBInterface
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Specimen table; default `specimen`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:anatomic_site_concept_id`
+"""
+function GetVisitAnatomicSite(
+    visit_ids,
+    conn;
+    tab=specimen
+)
+
+    df = DBInterface.execute(conn, GetVisitAnatomicSite(visit_ids; tab=tab)) |> DataFrame
+
+    return df
+
+end
+
+"""
+function GetVisitAnatomicSite(df:DataFrame, conn; tab = specimen)
+
+Given a `DataFrame` with a `:visit_occurrence_id` column, return the `DataFrame` with an associated `:anatomic_site_concept_id` for each `visit_occurrence_id` in the `DataFrame`
+
+Multiple dispatch that accepts all other arguments like in `GetVisitAnatomicSite(ids, conn; tab = specimen)`
+"""
+
+function GetVisitAnatomicSite(
+    df::DataFrame,
+    conn;
+    tab=specimen
+)
+
+    df_ids= df[:,"visit_occurrence_id"]
+    
+    return outerjoin(GetVisitAnatomicSite(df_ids, conn; tab=tab), df, on = :visit_occurrence_id)
+
+end
+"""
+GetVisitAnatomicSite(visit_ids; tab = visit_occurrence)
+
+Produces SQL statement that, given a list of `visit_id`'s, finds the conditions diagnosed associated with that visit.
+
+# Arguments:
+
+- `visit_ids` - list of `visit_id`'s; each ID must be of subtype `Integer`
+
+# Keyword Arguments:
+
+- `tab` - the `SQLTable` representing the Specimen table; default `specimen`
+
+# Returns
+
+- `df::DataFrame` - a two column `DataFrame` comprised of columns: `:visit_occurrence_id` and `:anatomic_site_concept_id`
+"""
+function GetVisitAnatomicSite(
+    visit_ids;
+    tab=specimen
+)
+
+    sql =
+        From(tab) |>
+        Where(Fun.in(Get.visit_occurrence_id, visit_ids...)) |>
+        Select(Get.visit_occurrence_id, Get.anatomic_site_concept_id) |>
+        q -> render(q, dialect=dialect)
+
+    return String(sql)
+
+end
+
+export GetDatabasePersonIDs, GetPatientState, GetPatientGender, GetPatientRace, GetPatientAgeGroup, GetPatientVisits, GetMostRecentConditions, GetMostRecentVisit, GetVisitCondition, GetPatientEthnicity, GetDatabaseYearRange, GetVisitPlaceOfService, GetVisitConcept, GetVisitDate, GetDrugExposures, GetDrugConceptIDs, GetDrugAmounts, GetVisitProcedure, GetDatabaseCohorts, GetCohortSubjects, GetCohortSubjectStartDate, GetCohortSubjectEndDate, GetDrugExposureIDs, GetDrugExposureEndDate, GetDrugExposureStartDate, GetVisitObservation, GetVisitDrug, GetVisitMeasurement, GetVisitDevice, GetVisitMetadata, GetVisitMeasurementValue, GetVisitAnatomicSite

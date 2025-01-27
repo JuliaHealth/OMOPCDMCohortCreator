@@ -2721,4 +2721,25 @@ function GetVisitAnatomicSite(
 
 end
 
-export GetDatabasePersonIDs, GetPatientState, GetPatientGender, GetPatientRace, GetPatientAgeGroup, GetPatientVisits, GetMostRecentConditions, GetMostRecentVisit, GetVisitCondition, GetPatientEthnicity, GetDatabaseYearRange, GetVisitPlaceOfService, GetVisitConcept, GetVisitDate, GetDrugExposures, GetDrugConceptIDs, GetDrugAmounts, GetVisitProcedure, GetDatabaseCohorts, GetCohortSubjects, GetCohortSubjectStartDate, GetCohortSubjectEndDate, GetDrugExposureIDs, GetDrugExposureEndDate, GetDrugExposureStartDate, GetVisitObservation, GetVisitDrug, GetVisitMeasurement, GetVisitDevice, GetVisitMetadata, GetVisitMeasurementValue, GetVisitAnatomicSite
+function GetSubjectVisit(ids, cohort_id; tab = cohort, join_tab = visit_occurrence)
+
+    sql = 
+        From(tab) |>
+        Where(Fun.in(Get.cohort_definition_id, cohort_id...)) |>
+        Where(Fun.in(Get.subject_id, ids...)) |>
+        Select(Get.subject_id, Get.cohort_start_date, Get.cohort_end_date) |>
+        Join(:join_tab => join_tab, 
+            on=Fun.and(
+            Get.subject_id .== Get.join_tab.person_id,
+            Fun.between(Get.join_tab.visit_start_date, Get.cohort_start_date, Get.cohort_end_date)
+        )) |>
+        Group(Get.join_tab.person_id, Get.join_tab.visit_occurrence_id) |>
+        q -> render(q, dialect=dialect)
+
+    df = DBInterface.execute(conn, sql) |> DataFrame
+
+    return df
+
+end
+
+export GetDatabasePersonIDs, GetPatientState, GetPatientGender, GetPatientRace, GetPatientAgeGroup, GetPatientVisits, GetMostRecentConditions, GetMostRecentVisit, GetVisitCondition, GetPatientEthnicity, GetDatabaseYearRange, GetVisitPlaceOfService, GetVisitConcept, GetVisitDate, GetDrugExposures, GetDrugConceptIDs, GetDrugAmounts, GetVisitProcedure, GetDatabaseCohorts, GetCohortSubjects, GetCohortSubjectStartDate, GetCohortSubjectEndDate, GetDrugExposureIDs, GetDrugExposureEndDate, GetDrugExposureStartDate, GetVisitObservation, GetVisitDrug, GetVisitMeasurement, GetVisitDevice, GetVisitMetadata, GetVisitMeasurementValue, GetVisitAnatomicSite, GetSubjectVisit
